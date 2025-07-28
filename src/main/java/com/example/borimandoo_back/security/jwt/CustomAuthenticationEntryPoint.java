@@ -1,4 +1,4 @@
-package com.example.borimandoo_back.config;
+package com.example.borimandoo_back.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.example.borimandoo_back.config;
+package com.example.borimandoo_back.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsername(token);
-                String role = jwtTokenProvider.getRole(token); // ex: ROLE_ADMIN
+                String role = jwtTokenProvider.getRole(token); // ex: ROLE_VET
 
                 System.out.println("==== JWT 인증 필터 진입 ====");
                 System.out.println("Authorization 헤더: " + authHeader);

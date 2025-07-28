@@ -38,22 +38,32 @@ jobs:
           docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
       - name: Deploy on EC2
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
           echo "${{ secrets.EC2_KEY }}" | base64 --decode > key.pem
           chmod 400 key.pem
 
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            echo "✅ Logging in to ECR"
             aws ecr get-login-password --region ap-northeast-2 | \
-            docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
+            docker login --username AWS --password-stdin "$ECR_REPOSITORY"
 
-            docker pull ${{ secrets.ECR_REPOSITORY }}:latest
+            echo "📦 Pulling latest Docker image"
+            docker pull "$ECR_REPOSITORY:latest"
 
+            echo "🧹 Removing previous container if exists"
             docker rm -f api-server || true
 
+            echo "🚀 Running new container"
             docker run -d --name api-server \
               -e SPRING_PROFILES_ACTIVE=api \
-              -e SPRING_DATASOURCE_URL=${{ secrets.DB_URL }} \
-              -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
-              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -p 8080:8080 ${{ secrets.ECR_REPOSITORY }}:latest
+              -e SPRING_DATASOURCE_URL="$DB_URL" \
+              -e SPRING_DATASOURCE_USERNAME="$DB_USERNAME" \
+              -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
+              -p 8080:8080 \
+              "$ECR_REPOSITORY:latest"
           EOF

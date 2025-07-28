@@ -7,6 +7,7 @@ import com.example.borimandoo_back.security.oauth.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -64,9 +65,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/healthcheck").permitAll()
                         .requestMatchers("/login", "/oauth2/authorization/**", "/login/oauth2/code/**", "/reissue/access-token").permitAll() // 로그인 및 OAuth 경로는 모두 허용
                         .requestMatchers("/logout").permitAll()
+                        .requestMatchers("/auth/**").authenticated()
                         .requestMatchers("/vet/**").hasRole("VET")
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .anyRequest().authenticated()

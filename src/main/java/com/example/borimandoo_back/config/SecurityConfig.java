@@ -2,6 +2,8 @@ package com.example.borimandoo_back.config;
 
 import com.example.borimandoo_back.security.jwt.CustomAuthenticationEntryPoint;
 import com.example.borimandoo_back.security.jwt.JwtAuthenticationFilter;
+import com.example.borimandoo_back.security.oauth.OAuthLoginFailureHandler;
+import com.example.borimandoo_back.security.oauth.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customEntryPoint;
+    private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public CorsFilter corsFilter() {
@@ -73,6 +77,12 @@ public class SecurityConfig {
                         .authenticationEntryPoint(customEntryPoint))
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuthLoginSuccessHandler)  // 로그인 성공 시 핸들러
+                        .failureHandler(oAuthLoginFailureHandler)  // 로그인 실패 시 핸들러 (선택)
+                );
 
         return http.build();
     }

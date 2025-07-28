@@ -24,8 +24,8 @@ public class Vet {
     @Column(name = "license_number", nullable = false)
     private String licenseNumber;
 
-    @Column(name = "license_image_url")
-    private String licenseImageUrl;
+    @OneToOne(mappedBy = "vet", cascade = CascadeType.ALL)
+    private LicenseImage licenseImage;
 
     @Column(name = "vet_area", nullable = false)
     private Integer vetArea; // 예: 02, 031 등 지역 코드

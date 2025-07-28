@@ -100,17 +100,18 @@ public class JwtTokenProvider {
     }
 
     // 토큰에서 userId를 username처럼 반환
-    public String getUsername(String token) {
+    public UUID getUserIdFromToken(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            return claims.get("userId", String.class);
-        } catch (JwtException e) {
-            log.error("getUsername 중 토큰 검증 실패: {}", e.getMessage());
-            throw new RuntimeException();
+            String userIdString = claims.get("userId", String.class);
+            return UUID.fromString(userIdString);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("getUserIdFromToken 중 토큰 검증 실패: {}", e.getMessage());
+            throw new RuntimeException("Invalid JWT token", e);
         }
     }
 

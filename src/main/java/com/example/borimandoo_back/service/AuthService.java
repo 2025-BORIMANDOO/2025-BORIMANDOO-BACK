@@ -33,6 +33,7 @@ public class AuthService {
                     null,
                     null
             );
+            vetRepository.save(vet);
         }
         else {
             user.setRole(User.Role.FARMER);
@@ -41,6 +42,7 @@ public class AuthService {
                     user,
                     null
             );
+            farmerRepository.save(farmer);
         }
         userRepository.save(user);
     }

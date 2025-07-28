@@ -62,6 +62,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
                     .userId(UUID.randomUUID())
                     .name(name)
                     .role(User.Role.BASIC)
+                    .subscription(User.Subscription.Basic)
                     .provider(provider)
                     .providerId(providerId)
                     .build();

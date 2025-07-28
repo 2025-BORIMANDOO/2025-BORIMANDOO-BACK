@@ -53,7 +53,7 @@ public class User {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 

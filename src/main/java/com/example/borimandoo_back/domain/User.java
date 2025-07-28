@@ -29,8 +29,9 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "users_id")
@@ -48,14 +49,30 @@ public class User {
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(name = "subscription", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Subscription subscription;
+
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, length = 20)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", length = 20)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "role")
-    private String role; // farmer or vet
+    public enum Role {
+        VET, FARMER
+    }
+
+    public enum Subscription {
+        Basic, Pro
+    }
 }

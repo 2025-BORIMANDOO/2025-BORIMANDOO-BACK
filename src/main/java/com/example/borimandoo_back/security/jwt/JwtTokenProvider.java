@@ -46,25 +46,6 @@ public class JwtTokenProvider {
         return token;
     }
 
-    // 토큰에서 userId 추출
-    public String getUserId(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            String userId = claims.get("userId", String.class);
-            log.info("토큰에서 추출한 userId: {}", userId);
-            return userId;
-
-        } catch (JwtException e) {
-            log.error("토큰 검증 실패: {}", e.getMessage());
-            throw new RuntimeException();
-        }
-    }
-
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {

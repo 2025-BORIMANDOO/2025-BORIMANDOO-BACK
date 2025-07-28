@@ -23,7 +23,7 @@ public class AuthService {
     private final FarmerRepository farmerRepository;
 
     public void setRole(PostRoleRequest request, String token) {
-        User user = userRepository.findByUserId(jwtTokenProvider.getUserId(token));
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
         if (request.getRole() == User.Role.VET) {
             user.setRole(User.Role.VET);
             Vet vet = new Vet(
@@ -46,7 +46,7 @@ public class AuthService {
     }
 
     public void setVetInfo(PostVetInfoRequest request, String token, LicenseImage licenseImageUrl) {
-        User user = userRepository.findByUserId(jwtTokenProvider.getUserId(token));
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
         Vet vet = vetRepository.findByUser(user);
         licenseImageUrl.setVet(vet);
         vet.setLicenseNumber(request.getLicenseNumber());
@@ -56,7 +56,7 @@ public class AuthService {
     }
 
     public void setFarmerInfo(PostFarmerInfoRequest request, String token) {
-        User user = userRepository.findByUserId(jwtTokenProvider.getUserId(token));
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
         Farmer farmer = farmerRepository.findByUser(user);
         farmer.setFarmLocation(request.getFarmLocation());
         farmerRepository.save(farmer);

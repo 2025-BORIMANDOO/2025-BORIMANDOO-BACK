@@ -70,7 +70,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     public enum Role {
-        VET, FARMER
+        BASIC, VET, FARMER
     }
 
     public enum Subscription {

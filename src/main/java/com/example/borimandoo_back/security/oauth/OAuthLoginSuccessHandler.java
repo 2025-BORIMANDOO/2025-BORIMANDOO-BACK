@@ -74,8 +74,10 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         }
 
         // JWT 발급
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
-        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
+        String role = user.getRole().name(); // 또는 .toString() — enum 타입이면
+
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), role, REFRESH_TOKEN_EXPIRATION_TIME);
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), role, ACCESS_TOKEN_EXPIRATION_TIME);
 
         refreshTokenRepository.save(
                 RefreshToken.builder()

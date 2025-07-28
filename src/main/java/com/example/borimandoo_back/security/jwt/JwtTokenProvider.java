@@ -24,19 +24,20 @@ public class JwtTokenProvider {
     }
 
     // 액세스 토큰 발급
-    public String createAccessToken(UUID userId, long expirationMillis) {
-        return generateToken(userId, expirationMillis, "액세스");
+    public String createAccessToken(UUID userId, String role, long expirationMillis) {
+        return generateToken(userId, role, expirationMillis, "액세스");
     }
 
     // 리프레시 토큰 발급
-    public String createRefreshToken(UUID userId, long expirationMillis) {
-        return generateToken(userId, expirationMillis, "리프레시");
+    public String createRefreshToken(UUID userId, String role, long expirationMillis) {
+        return generateToken(userId, role, expirationMillis, "리프레시");
     }
 
     // 공통 토큰 생성 로직
-    private String generateToken(UUID userId, long expirationMillis, String type) {
+    private String generateToken(UUID userId, String role, long expirationMillis, String type) {
         String token = Jwts.builder()
                 .claim("userId", userId.toString())
+                .claim("role", role) // ✅ 역할 클레임 추가
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(getSigningKey())
@@ -110,5 +111,4 @@ public class JwtTokenProvider {
             throw new RuntimeException();
         }
     }
-
 }

@@ -59,7 +59,7 @@ public class User {
 
     @Column(name = "subscription", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Subscription subscription;
+    private Subscription subscription = Subscription.Basic;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)

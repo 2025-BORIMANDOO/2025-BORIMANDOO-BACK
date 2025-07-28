@@ -47,7 +47,7 @@ public class User {
     @Column(name = "provider", nullable = false, length = 10)
     private String provider;
 
-    @Column(name = "provider_id", nullable = false, length = 50)
+    @Column(name = "provider_id", nullable = false, length = 50, unique = true)
     private String providerId;
 
     @Column(name = "phone_number", length = 20)

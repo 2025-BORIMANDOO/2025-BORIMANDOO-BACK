@@ -25,6 +25,9 @@ public class Request {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "reserved_at")
+    private LocalDateTime reservedAt;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "request_status", nullable = false)
     private RequestStatus requestStatus;

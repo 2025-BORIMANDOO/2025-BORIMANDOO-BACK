@@ -93,7 +93,7 @@ public class FarmerService {
         if (request == null || request.getFarmer() != farmer)
             return null;
 
-        ArrayList<Estimate> estimates = estimateRepository.findAllByRequest();
+        ArrayList<Estimate> estimates = estimateRepository.findAllByRequest(request);
         ArrayList<GetFarmerEstimateResponses> responses = new ArrayList<>();
 
         for (Estimate estimate : estimates) {

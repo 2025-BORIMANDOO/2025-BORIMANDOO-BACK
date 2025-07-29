@@ -21,12 +21,12 @@ public class Vet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "license_number", nullable = false)
+    @Column(name = "license_number")
     private String licenseNumber;
 
     @OneToOne(mappedBy = "vet", cascade = CascadeType.ALL)
     private LicenseImage licenseImage;
 
-    @Column(name = "vet_area", nullable = false)
+    @Column(name = "vet_area")
     private Integer vetArea; // 예: 02, 031 등 지역 코드
 }

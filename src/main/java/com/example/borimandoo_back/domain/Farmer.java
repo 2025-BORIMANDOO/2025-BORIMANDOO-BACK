@@ -21,6 +21,6 @@ public class Farmer {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "farm_location", nullable = false)
+    @Column(name = "farm_location")
     private String farmLocation;
 }

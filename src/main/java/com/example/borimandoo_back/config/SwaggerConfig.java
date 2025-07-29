@@ -39,6 +39,6 @@ public class SwaggerConfig {
                                         .bearerFormat("JWT")
                         )
                 )
-                .servers(List.of(new Server().url("https://admin-unis.com")));
+                .servers(List.of(new Server().url("https://medimo.site")));
     }
 }

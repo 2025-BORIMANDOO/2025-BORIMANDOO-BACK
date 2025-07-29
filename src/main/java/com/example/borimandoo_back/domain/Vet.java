@@ -28,5 +28,5 @@ public class Vet {
     private LicenseImage licenseImage;
 
     @Column(name = "vet_area")
-    private Integer vetArea; // 예: 02, 031 등 지역 코드
+    private VetArea vetArea; // 예: 02, 031 등 지역 코드
 }

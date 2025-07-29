@@ -4,6 +4,7 @@ import com.example.borimandoo_back.domain.LicenseImage;
 import com.example.borimandoo_back.domain.User;
 import com.example.borimandoo_back.dto.PostFarmerInfoRequest;
 import com.example.borimandoo_back.dto.PostRoleRequest;
+import com.example.borimandoo_back.dto.PostRoleResponse;
 import com.example.borimandoo_back.dto.PostVetInfoRequest;
 import com.example.borimandoo_back.global.ApiResponse;
 import com.example.borimandoo_back.security.jwt.JwtTokenProvider;
@@ -27,7 +28,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<?>> setRole(@RequestHeader("Authorization") String authorizationHeader,
                                                   @RequestBody PostRoleRequest request) {
         String token = authorizationHeader.replace("Bearer ", "");
-        authService.setRole(request, token);
+        PostRoleResponse response = authService.setRole(request, token);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

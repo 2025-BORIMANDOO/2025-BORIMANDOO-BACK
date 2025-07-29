@@ -25,7 +25,7 @@ public class VetService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public ArrayList<GetVetRequestResponses> getUrgentRequests() {
-        ArrayList<Request> requests = requestRepository.findAllByUrgencyTrue();
+        ArrayList<Request> requests = requestRepository.findAllByUrgencyTrueAndRequestStatus(Request.RequestStatus.WAITING);
         ArrayList<GetVetRequestResponses> responses = new ArrayList<>();
         for (Request request : requests) {
             responses.add(new GetVetRequestResponses(
@@ -39,7 +39,7 @@ public class VetService {
     }
 
     public ArrayList<GetVetRequestResponses> getGeneralRequests() {
-        ArrayList<Request> requests = requestRepository.findAllByUrgencyFalse();
+        ArrayList<Request> requests = requestRepository.findAllByUrgencyFalseAndRequestStatus(Request.RequestStatus.WAITING);
         ArrayList<GetVetRequestResponses> responses = new ArrayList<>();
         for (Request request : requests) {
             responses.add(new GetVetRequestResponses(

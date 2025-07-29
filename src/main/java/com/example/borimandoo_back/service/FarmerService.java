@@ -1,17 +1,8 @@
 package com.example.borimandoo_back.service;
 
-import com.example.borimandoo_back.domain.Farmer;
-import com.example.borimandoo_back.domain.Request;
-import com.example.borimandoo_back.domain.RequestImage;
-import com.example.borimandoo_back.domain.User;
-import com.example.borimandoo_back.dto.GetFarmerRequestResponse;
-import com.example.borimandoo_back.dto.GetFarmerRequestResponses;
-import com.example.borimandoo_back.dto.PostFarmerRequest;
-import com.example.borimandoo_back.dto.PostFarmerResponse;
-import com.example.borimandoo_back.repository.FarmerRepository;
-import com.example.borimandoo_back.repository.RequestImageRepository;
-import com.example.borimandoo_back.repository.RequestRepository;
-import com.example.borimandoo_back.repository.UserRepository;
+import com.example.borimandoo_back.domain.*;
+import com.example.borimandoo_back.dto.*;
+import com.example.borimandoo_back.repository.*;
 import com.example.borimandoo_back.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +18,7 @@ public class FarmerService {
     private final RequestRepository requestRepository;
     private final RequestImageRepository requestImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EstimateRepository estimateRepository;
 
     public PostFarmerResponse request(PostFarmerRequest frontRequest, String token, RequestImage requestImage) {
         User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
@@ -92,5 +84,40 @@ public class FarmerService {
                 request.getRequestImage().getImageUrl()
         );
         return response;
+    }
+
+    public ArrayList<GetFarmerEstimateResponses> getEstimates(String token, Long requestId) {
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        Farmer farmer = farmerRepository.findByUser(user);
+        Request request = requestRepository.findById(requestId).orElse(null);
+        if (request == null || request.getFarmer() != farmer)
+            return null;
+
+        ArrayList<Estimate> estimates = estimateRepository.findAllByRequest();
+        ArrayList<GetFarmerEstimateResponses> responses = new ArrayList<>();
+
+        for (Estimate estimate : estimates) {
+            responses.add(new GetFarmerEstimateResponses(
+                    estimate.getId(),
+                    estimate.getPrice(),
+                    estimate.getAction(),
+                    estimate.getVet().getUser().getName()
+            ));
+        }
+        return responses;
+    }
+
+    public Request chooseEstimate(String token, Long requestId, Long estimateId) {
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        Farmer farmer = farmerRepository.findByUser(user);
+        Request request = requestRepository.findById(requestId).orElse(null);
+        Estimate estimate = estimateRepository.findById(estimateId).orElse(null);
+        if (request == null || estimate == null || request.getFarmer() != farmer)
+            return null;
+
+        request.setRequestStatus(Request.RequestStatus.ACCEPTED);
+        Request savedRequest = requestRepository.save(request);
+
+        return savedRequest;
     }
 }

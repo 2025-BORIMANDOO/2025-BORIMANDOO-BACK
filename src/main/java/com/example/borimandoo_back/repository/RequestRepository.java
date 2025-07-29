@@ -10,8 +10,8 @@ import java.util.ArrayList;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
     ArrayList<Request> findAllByFarmer(Farmer farmer);
+    ArrayList<Request> findAllByUrgencyTrueAndRequestStatus(Request.RequestStatus requestStatus);
 
-    ArrayList<Request> findAllByUrgencyTrue();
+    ArrayList<Request> findAllByUrgencyFalseAndRequestStatus(Request.RequestStatus requestStatus);
 
-    ArrayList<Request> findAllByUrgencyFalse();
 }

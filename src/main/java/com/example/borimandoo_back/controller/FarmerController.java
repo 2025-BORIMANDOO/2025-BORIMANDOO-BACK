@@ -1,10 +1,8 @@
 package com.example.borimandoo_back.controller;
 
+import com.example.borimandoo_back.domain.Request;
 import com.example.borimandoo_back.domain.RequestImage;
-import com.example.borimandoo_back.dto.GetFarmerRequestResponse;
-import com.example.borimandoo_back.dto.GetFarmerRequestResponses;
-import com.example.borimandoo_back.dto.PostFarmerRequest;
-import com.example.borimandoo_back.dto.PostFarmerResponse;
+import com.example.borimandoo_back.dto.*;
 import com.example.borimandoo_back.global.ApiResponse;
 import com.example.borimandoo_back.service.FarmerService;
 import com.example.borimandoo_back.service.S3Service;
@@ -53,5 +51,26 @@ public class FarmerController {
         return (response != null)?
                 ResponseEntity.ok(ApiResponse.success(response)):
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "해당 진료 요청 조회에 실패했습니다."));
+    }
+
+    @GetMapping("/requests/{requestId}/estimates")
+    public ResponseEntity<ApiResponse<?>> getEstimates(@RequestHeader("Authorization") String authorizationHeader,
+                                                       @PathVariable("requestId") Long requestId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        ArrayList<GetFarmerEstimateResponses> responses = farmerService.getEstimates(token, requestId);
+        return (responses != null)?
+                ResponseEntity.ok(ApiResponse.success(responses)):
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "해당 진료 요청 조회에 실패했습니다."));
+    }
+
+    @PostMapping("/requests/{requestId}/estimates/{estimateId}")
+    public ResponseEntity<ApiResponse<?>> chooseEstimate(@RequestHeader("Authorization") String authorizationHeader,
+                                                         @PathVariable("requestId") Long requestId,
+                                                         @PathVariable("estimateId") Long estimateId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Request changedRequest = farmerService.chooseEstimate(token, requestId, estimateId);
+        return (changedRequest != null)?
+                ResponseEntity.ok(ApiResponse.success(null)):
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "견적서 선택에 실패했습니다."));
     }
 }

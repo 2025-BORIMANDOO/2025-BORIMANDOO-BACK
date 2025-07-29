@@ -36,6 +36,7 @@ public class FarmerService {
         Request request = new Request(
                 null,
                 LocalDateTime.now(),
+                (frontRequest.getUrgency())? null : frontRequest.getReservedAt(),
                 Request.RequestStatus.WAITING,
                 null,
                 farmer,

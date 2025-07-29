@@ -2,10 +2,13 @@ package com.example.borimandoo_back.service;
 
 import com.example.borimandoo_back.domain.Estimate;
 import com.example.borimandoo_back.domain.Request;
+import com.example.borimandoo_back.domain.User;
+import com.example.borimandoo_back.domain.Vet;
 import com.example.borimandoo_back.dto.GetVetRequestResponse;
 import com.example.borimandoo_back.dto.GetVetRequestResponses;
 import com.example.borimandoo_back.dto.PostVetEstimateRequest;
 import com.example.borimandoo_back.repository.*;
+import com.example.borimandoo_back.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class VetService {
     private final RequestRepository requestRepository;
     private final RequestImageRepository requestImageRepository;
     private final EstimateRepository estimateRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public ArrayList<GetVetRequestResponses> getUrgentRequests() {
         ArrayList<Request> requests = requestRepository.findAllByUrgencyTrue();
@@ -62,7 +66,9 @@ public class VetService {
         );
     }
 
-    public Estimate estimate(Long requestId, PostVetEstimateRequest frontRequest) {
+    public Estimate estimate(Long requestId, String token, PostVetEstimateRequest frontRequest) {
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        Vet vet = vetRepository.findByUser(user);
         Request request = requestRepository.findById(requestId).orElse(null);
         if (request == null) return null;
 
@@ -70,7 +76,8 @@ public class VetService {
                 null,
                 frontRequest.getPrice(),
                 frontRequest.getAction(),
-                request
+                request,
+                vet
         );
         Estimate saved = estimateRepository.save(estimate);
         return saved;

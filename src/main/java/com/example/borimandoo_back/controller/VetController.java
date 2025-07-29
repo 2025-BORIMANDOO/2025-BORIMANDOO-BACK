@@ -45,8 +45,10 @@ public class VetController {
 
     @PostMapping("/requests/{requestId}/estimate")
     public ResponseEntity<ApiResponse<?>> estimate(@PathVariable("requestId") Long requestId,
+                                                   @RequestHeader("Authorization") String authorizationHeader,
                                                    @RequestBody PostVetEstimateRequest frontRequest) {
-        Estimate estimate = vetService.estimate(requestId, frontRequest);
+        String token = authorizationHeader.replace("Bearer ", "");
+        Estimate estimate = vetService.estimate(requestId, token, frontRequest);
         return (estimate != null)?
                 ResponseEntity.ok(ApiResponse.created(null)):
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "견적을 전송하는 데 실패했습니다."));

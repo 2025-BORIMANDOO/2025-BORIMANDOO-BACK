@@ -26,4 +26,8 @@ public class Estimate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id", nullable = false)
     private Request request;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vet_id", nullable = false)
+    private Vet vet;
 }

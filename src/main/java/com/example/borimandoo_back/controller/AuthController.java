@@ -29,7 +29,7 @@ public class AuthController {
                                                   @RequestBody PostRoleRequest request) {
         String token = authorizationHeader.replace("Bearer ", "");
         PostRoleResponse response = authService.setRole(request, token);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping(value = "/vet-info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

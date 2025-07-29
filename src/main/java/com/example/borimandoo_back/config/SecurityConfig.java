@@ -75,8 +75,8 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/oauth2/authorization/**", "/login/oauth2/code/**", "/reissue/access-token").permitAll() // 로그인 및 OAuth 경로는 모두 허용
                         .requestMatchers("/logout").permitAll()
                         .requestMatchers("/auth/**").authenticated()
-                        .requestMatchers("/vet/**").hasAuthority("VET")
-                        .requestMatchers("/farmer/**").hasAuthority("FARMER")
+                        .requestMatchers("/vet/**").permitAll()
+                        .requestMatchers("/farmer/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

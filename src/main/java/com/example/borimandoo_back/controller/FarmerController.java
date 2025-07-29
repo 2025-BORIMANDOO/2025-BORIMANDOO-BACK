@@ -2,6 +2,7 @@ package com.example.borimandoo_back.controller;
 
 import com.example.borimandoo_back.domain.RequestImage;
 import com.example.borimandoo_back.dto.GetFarmerRequestResponse;
+import com.example.borimandoo_back.dto.GetFarmerRequestResponses;
 import com.example.borimandoo_back.dto.PostFarmerRequest;
 import com.example.borimandoo_back.dto.PostFarmerResponse;
 import com.example.borimandoo_back.global.ApiResponse;
@@ -38,9 +39,19 @@ public class FarmerController {
     @GetMapping("/requests")
     public ResponseEntity<ApiResponse<?>> getRequests(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
-        ArrayList<GetFarmerRequestResponse> responses = farmerService.getRequests(token);
+        ArrayList<GetFarmerRequestResponses> responses = farmerService.getRequests(token);
         return (responses != null)?
                 ResponseEntity.ok(ApiResponse.success(responses)):
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "진료 요청 기록 조회에 실패했습니다."));
+    }
+
+    @GetMapping("/requests/{requestId}")
+    public ResponseEntity<ApiResponse<?>> getRequest(@RequestHeader("Authorization") String authorizationHeader,
+                                                     @PathVariable("requestId") Long requestId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        GetFarmerRequestResponse response = farmerService.getRequest(token, requestId);
+        return (response != null)?
+                ResponseEntity.ok(ApiResponse.success(response)):
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "해당 진료 요청 조회에 실패했습니다."));
     }
 }

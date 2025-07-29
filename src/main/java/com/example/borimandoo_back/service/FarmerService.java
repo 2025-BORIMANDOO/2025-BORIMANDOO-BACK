@@ -5,6 +5,7 @@ import com.example.borimandoo_back.domain.Request;
 import com.example.borimandoo_back.domain.RequestImage;
 import com.example.borimandoo_back.domain.User;
 import com.example.borimandoo_back.dto.GetFarmerRequestResponse;
+import com.example.borimandoo_back.dto.GetFarmerRequestResponses;
 import com.example.borimandoo_back.dto.PostFarmerRequest;
 import com.example.borimandoo_back.dto.PostFarmerResponse;
 import com.example.borimandoo_back.repository.FarmerRepository;
@@ -51,14 +52,14 @@ public class FarmerService {
         );
     }
 
-    public ArrayList<GetFarmerRequestResponse> getRequests(String token) {
+    public ArrayList<GetFarmerRequestResponses> getRequests(String token) {
         User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
         Farmer farmer = farmerRepository.findByUser(user);
         ArrayList<Request> requests = requestRepository.findAllByFarmer(farmer);
-        ArrayList<GetFarmerRequestResponse> responses = new ArrayList<>();
+        ArrayList<GetFarmerRequestResponses> responses = new ArrayList<>();
 
         for (Request request : requests) {
-            responses.add(new GetFarmerRequestResponse(
+            responses.add(new GetFarmerRequestResponses(
                     request.getId(),
                     request.getCreatedAt(),
                     request.getRequestStatus(),
@@ -66,5 +67,24 @@ public class FarmerService {
             ));
         }
         return responses;
+    }
+
+    public GetFarmerRequestResponse getRequest(String token, Long requestId) {
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        Farmer farmer = farmerRepository.findByUser(user);
+        Request request = requestRepository.findById(requestId).orElse(null);
+        if (request == null || request.getFarmer() != farmer)
+            return null;
+
+        GetFarmerRequestResponse response = new GetFarmerRequestResponse(
+                request.getUrgency(),
+                request.getCreatedAt(),
+                request.getRequestStatus(),
+                request.getVet(),
+                request.getAnimalType(),
+                request.getSymptomText(),
+                request.getRequestImage().getImageUrl()
+        );
+        return response;
     }
 }

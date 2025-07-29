@@ -13,12 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GetFarmerRequestResponse {
-    private Boolean urgency;
+public class GetFarmerRequestResponses {
+    private Long requestId;
     private LocalDateTime createdAt;
     private Request.RequestStatus requestStatus;
     private Vet vet;
-    private String animalType;
-    private String symptomText;
-    private String requestImageUrl;
 }

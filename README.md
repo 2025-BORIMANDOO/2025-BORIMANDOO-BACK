@@ -1,7 +1,10 @@
 # 🐳 MEDIMO Backend
 
 Spring Boot 기반 RESTful API 서버로, AWS RDS, S3, GitHub Actions, Docker, Nginx, HTTPS를 활용한 클라우드 환경에서 운영됩니다.
+<br>
 최종 배포 주소: https://medimo.site/
+<br>
+API 명세서: https://medimo.site/swagger-ui.html
 
 ## 📁 프로젝트 구조
 

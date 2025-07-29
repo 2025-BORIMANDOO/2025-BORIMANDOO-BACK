@@ -37,7 +37,7 @@ public class AuthController {
                                                      @RequestPart("data") PostVetInfoRequest request,
                                                      @RequestPart("file") MultipartFile licenseImage) {
         String token = authorizationHeader.replace("Bearer ", "");
-        LicenseImage licenseImageUrl = s3Service.uploadFile(licenseImage);
+        LicenseImage licenseImageUrl = s3Service.uploadLicenseImageFile(licenseImage);
         authService.setVetInfo(request, token, licenseImageUrl);
         return ResponseEntity.ok(ApiResponse.success(null));
     }

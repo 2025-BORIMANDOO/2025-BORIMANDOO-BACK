@@ -1,6 +1,7 @@
 package com.example.borimandoo_back.service;
 
 import com.example.borimandoo_back.domain.LicenseImage;
+import com.example.borimandoo_back.domain.RequestImage;
 import com.example.borimandoo_back.domain.Vet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public LicenseImage uploadFile(MultipartFile licenseImage) {
+    public LicenseImage uploadLicenseImageFile(MultipartFile licenseImage) {
         try {
             String originalFilename = licenseImage.getOriginalFilename();
             String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -50,6 +51,34 @@ public class S3Service {
             String url = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, encodedFileName);
 
             return LicenseImage.builder()
+                    .imageUrl(url)
+                    .build();
+
+        } catch (IOException | AwsServiceException e) {
+            throw new RuntimeException("S3 파일 업로드 실패: " + e.getMessage(), e);
+        }
+    }
+
+    public RequestImage uploadRequestImageFile(MultipartFile requestImage) {
+        try {
+            String originalFilename = requestImage.getOriginalFilename();
+            String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String uniqueFileName = "requests/" + UUID.randomUUID() + "_" +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ext;
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(uniqueFileName)
+                    .contentType(requestImage.getContentType())
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(
+                    requestImage.getInputStream(), requestImage.getSize()));
+
+            String encodedFileName = URLEncoder.encode(uniqueFileName, StandardCharsets.UTF_8);
+            String url = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, encodedFileName);
+
+            return RequestImage.builder()
                     .imageUrl(url)
                     .build();
 

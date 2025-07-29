@@ -33,6 +33,10 @@ public class Request {
     @JoinColumn(name = "vet_id")
     private Vet vet; // 담당 수의사 (nullable 허용 가능)
 
+    @ManyToOne
+    @JoinColumn(name = "farmer_id", nullable = false)
+    private Farmer farmer; // 요청자
+
     @Column(name = "animal_type", nullable = false)
     private String animalType; // 소/말/돼지/기타
 
@@ -42,8 +46,8 @@ public class Request {
     @Column(name = "symptom_text", columnDefinition = "TEXT")
     private String symptomText;
 
-    @Column(name = "symptom_image_url")
-    private String symptomImageUrl;
+    @OneToOne(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RequestImage requestImage;
 
     @Column(name = "farm_location", nullable = false)
     private String farmLocation;

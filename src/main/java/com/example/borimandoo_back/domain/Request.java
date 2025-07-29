@@ -42,8 +42,8 @@ public class Request {
     @Column(name = "symptom_text", columnDefinition = "TEXT")
     private String symptomText;
 
-    @Column(name = "symptom_image_url")
-    private String symptomImageUrl;
+    @OneToOne(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RequestImage requestImage;
 
     @Column(name = "farm_location", nullable = false)
     private String farmLocation;

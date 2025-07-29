@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GetVetRequestResponses {
-    private Long requestId;
+public class GetVetRequestResponse {
     private LocalDateTime time;
     private String farmLocation;
+    private Boolean urgency;
     private String animalType;
+    private String symptomText;
+    private String requestImageUrl;
 }

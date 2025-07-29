@@ -28,9 +28,11 @@ public class FarmerService {
     private final RequestImageRepository requestImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public PostFarmerResponse request(PostFarmerRequest frontRequest, String token, RequestImage requestImageUrl) {
+    public PostFarmerResponse request(PostFarmerRequest frontRequest, String token, RequestImage requestImage) {
         User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
         Farmer farmer = farmerRepository.findByUser(user);
+
+        // 1. 먼저 Request 생성 (이미지 없이)
         Request request = new Request(
                 null,
                 LocalDateTime.now(),
@@ -40,16 +42,19 @@ public class FarmerService {
                 frontRequest.getAnimalType(),
                 frontRequest.getUrgency(),
                 frontRequest.getSymptomText(),
-                requestImageUrl,
+                null, // 일단 이미지 없이
                 farmer.getFarmLocation()
         );
         Request saved = requestRepository.save(request);
-        requestImageUrl.setRequest(request);
-        requestImageRepository.save(requestImageUrl);
 
-        return new PostFarmerResponse(
-                saved.getId()
-        );
+        // 2. 이미지에 request 연결
+        requestImage.setRequest(saved);
+        requestImageRepository.save(requestImage);
+
+        // 3. 다시 연결 (양방향 유지하고 싶다면)
+        saved.setRequestImage(requestImage);
+
+        return new PostFarmerResponse(saved.getId());
     }
 
     public ArrayList<GetFarmerRequestResponses> getRequests(String token) {

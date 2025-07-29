@@ -4,6 +4,7 @@ import com.example.borimandoo_back.domain.Farmer;
 import com.example.borimandoo_back.domain.Request;
 import com.example.borimandoo_back.domain.RequestImage;
 import com.example.borimandoo_back.domain.User;
+import com.example.borimandoo_back.dto.GetFarmerRequestResponse;
 import com.example.borimandoo_back.dto.PostFarmerRequest;
 import com.example.borimandoo_back.dto.PostFarmerResponse;
 import com.example.borimandoo_back.repository.FarmerRepository;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class FarmerService {
                 LocalDateTime.now(),
                 Request.RequestStatus.WAITING,
                 null,
+                farmer,
                 frontRequest.getAnimalType(),
                 frontRequest.getUrgency(),
                 frontRequest.getSymptomText(),
@@ -46,5 +49,22 @@ public class FarmerService {
         return new PostFarmerResponse(
                 saved.getId()
         );
+    }
+
+    public ArrayList<GetFarmerRequestResponse> getRequests(String token) {
+        User user = userRepository.findByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        Farmer farmer = farmerRepository.findByUser(user);
+        ArrayList<Request> requests = requestRepository.findAllByFarmer(farmer);
+        ArrayList<GetFarmerRequestResponse> responses = new ArrayList<>();
+
+        for (Request request : requests) {
+            responses.add(new GetFarmerRequestResponse(
+                    request.getId(),
+                    request.getCreatedAt(),
+                    request.getRequestStatus(),
+                    request.getVet()
+            ));
+        }
+        return responses;
     }
 }

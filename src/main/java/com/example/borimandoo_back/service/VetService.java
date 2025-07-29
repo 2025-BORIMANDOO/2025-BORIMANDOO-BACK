@@ -1,18 +1,16 @@
 package com.example.borimandoo_back.service;
 
-import com.example.borimandoo_back.domain.Estimate;
-import com.example.borimandoo_back.domain.Request;
-import com.example.borimandoo_back.domain.User;
-import com.example.borimandoo_back.domain.Vet;
-import com.example.borimandoo_back.dto.GetVetRequestResponse;
-import com.example.borimandoo_back.dto.GetVetRequestResponses;
-import com.example.borimandoo_back.dto.PostVetEstimateRequest;
+import com.example.borimandoo_back.domain.*;
+import com.example.borimandoo_back.dto.*;
 import com.example.borimandoo_back.repository.*;
 import com.example.borimandoo_back.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +21,10 @@ public class VetService {
     private final RequestImageRepository requestImageRepository;
     private final EstimateRepository estimateRepository;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final AnimalRepository animalRepository;
+    private final TreatmentRecordRepository treatmentRecordRepository;
+    private final MedicationRecordRepository medicationRecordRepository;
 
     public ArrayList<GetVetRequestResponses> getUrgentRequests() {
         ArrayList<Request> requests = requestRepository.findAllByUrgencyTrueAndRequestStatus(Request.RequestStatus.WAITING);
@@ -81,5 +83,61 @@ public class VetService {
         );
         Estimate saved = estimateRepository.save(estimate);
         return saved;
+    }
+
+    public void writeTreatment(PostTreatmentRequest request, String token) {
+        UUID userId = jwtTokenProvider.getUserIdFromToken(token);
+        Vet vet = vetRepository.findByUser_UserId(userId);
+        Animal animal = animalRepository.findById(request.getAnimalId())
+                .orElseThrow(() -> new IllegalArgumentException("가축 정보를 찾을 수 없습니다."));
+
+        TreatmentRecord treatment = treatmentRecordRepository.save(
+                TreatmentRecord.builder()
+                        .animal(animal)
+                        .vet(vet)
+                        .treatmentDate(request.getTreatmentDate())
+                        .diagnosis(request.getDiagnosis())
+                        .notes(request.getNotes())
+                        .build()
+        );
+
+        for (MedicationDto dto : request.getMedications()) {
+            MedicationRecord medication = MedicationRecord.builder()
+                    .treatmentRecord(treatment)
+                    .medicineName(dto.getMedicineName())
+                    .dose(dto.getDose())
+                    .route(dto.getRoute())
+                    .administrationDate(dto.getAdministrationDate())
+                    .build();
+            medicationRecordRepository.save(medication);
+        }
+    }
+
+    public List<TreatmentResponse> viewMyTreatments(String token) {
+        UUID userId = jwtTokenProvider.getUserIdFromToken(token);
+        Vet vet = vetRepository.findByUser_UserId(userId);
+        return treatmentRecordRepository.findAllByVet(vet).stream()
+                .map(TreatmentResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<TreatmentResponse> viewAnimalTreatments(Long animalId, String token) {
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new IllegalArgumentException("가축 정보를 찾을 수 없습니다."));
+
+        return treatmentRecordRepository.findAllByAnimal(animal).stream()
+                .map(TreatmentResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public TreatmentResponse viewMyTreatment(Long treatmentId, String token) {
+        UUID userId = jwtTokenProvider.getUserIdFromToken(token);
+        Vet vet = vetRepository.findByUser_UserId(userId);
+
+        TreatmentRecord treatment = treatmentRecordRepository.findById(treatmentId)
+                .filter(t -> t.getVet().equals(vet))
+                .orElseThrow(() -> new IllegalArgumentException("해당 진료 기록에 접근할 수 없습니다."));
+
+        return TreatmentResponse.from(treatment);
     }
 }
